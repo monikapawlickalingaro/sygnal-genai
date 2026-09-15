@@ -9,7 +9,39 @@
  * nie odpowie, pokazujemy komunikat o błędzie zamiast czegokolwiek zmyślać.
  */
 
-const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+/*
+ * Publiczne proxy CORS bywają zawodne (bez SLA, czasem po prostu padają).
+ * Zamiast polegać na jednym, próbujemy po kolei kilku, aż któreś odpowie.
+ * Najpierw próba bezpośrednia (na wypadek, gdyby źródło samo wysyłało CORS).
+ */
+const PROXY_BUILDERS = [
+  (url) => url,
+  (url) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+  (url) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url),
+  (url) => "https://corsproxy.io/?url=" + encodeURIComponent(url),
+];
+
+async function fetchTextWithFallback(url, timeoutMs = 8000) {
+  let lastErr = new Error("Brak dostępnych proxy");
+  for (const build of PROXY_BUILDERS) {
+    const proxiedUrl = build(url);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(proxiedUrl, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      if (!text || text.trim().length < 20) throw new Error("Pusta odpowiedź");
+      return text;
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      // spróbuj kolejnego proxy
+    }
+  }
+  throw lastErr;
+}
 
 const NEWS_FEEDS = [
   { name: "TechCrunch AI", url: "https://techcrunch.com/category/artificial-intelligence/feed/" },
@@ -22,12 +54,6 @@ const MEME_SUBREDDITS = ["ProgrammerHumor", "singularity", "ChatGPT"];
 const MAX_NEWS_PER_SOURCE = 8;
 const MAX_MEMES_PER_SUB = 12;
 const IMAGE_EXT = /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i;
-
-async function fetchViaProxy(targetUrl) {
-  const res = await fetch(CORS_PROXY + encodeURIComponent(targetUrl));
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res;
-}
 
 function relativeTime(date) {
   const diffMs = Date.now() - date.getTime();
@@ -48,8 +74,7 @@ function stripHtml(html) {
 /* ---------- NEWS ---------- */
 
 async function fetchFeed(source) {
-  const res = await fetchViaProxy(source.url);
-  const xmlText = await res.text();
+  const xmlText = await fetchTextWithFallback(source.url);
   const doc = new DOMParser().parseFromString(xmlText, "text/xml");
 
   if (doc.querySelector("parsererror")) throw new Error("Nieprawidłowy XML");
@@ -82,6 +107,7 @@ async function loadNews() {
       allItems = allItems.concat(r.value);
     } else {
       failedSources.push(NEWS_FEEDS[i].name);
+      console.error(`[Sygnał] Błąd pobierania "${NEWS_FEEDS[i].name}":`, r.reason);
     }
   });
 
@@ -136,8 +162,10 @@ function buildTicker(items) {
 /* ---------- MEMES ---------- */
 
 async function fetchSubredditMemes(sub) {
-  const res = await fetchViaProxy(`https://www.reddit.com/r/${sub}/hot.json?limit=25&raw_json=1`);
-  const json = await res.json();
+  const text = await fetchTextWithFallback(
+    `https://www.reddit.com/r/${sub}/hot.json?limit=25&raw_json=1`
+  );
+  const json = JSON.parse(text);
   const posts = json?.data?.children || [];
 
   return posts
@@ -170,6 +198,7 @@ async function loadMemes() {
       allMemes = allMemes.concat(r.value);
     } else {
       failedSubs.push(MEME_SUBREDDITS[i]);
+      console.error(`[Sygnał] Błąd pobierania r/${MEME_SUBREDDITS[i]}:`, r.reason);
     }
   });
 
