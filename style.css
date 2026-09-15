@@ -1,0 +1,257 @@
+/* ---------- tokens ---------- */
+:root{
+  --bg: #10151b;
+  --panel: #171e26;
+  --ink: #e9e4d8;
+  --muted: #8b95a1;
+  --line: #2a323c;
+
+  --signal: #c14430;
+  --signal-bg: rgba(193, 68, 48, 0.08);
+  --noise: #4fa69c;
+  --noise-bg: rgba(79, 166, 156, 0.08);
+
+  --serif: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+}
+
+*{ box-sizing: border-box; }
+
+html{ scroll-behavior: smooth; }
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.5;
+}
+
+a{ color: inherit; }
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom: 1px solid var(--line);
+  padding: 2.75rem 1.5rem 2rem;
+}
+.masthead__inner{
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.masthead__wordmark{
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.masthead__tagline{
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0.6rem 0 0;
+  max-width: 44ch;
+}
+
+/* ---------- ticker ---------- */
+.ticker{
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0.55rem 0;
+}
+.ticker__track{
+  display: inline-flex;
+  gap: 2.5rem;
+  padding-left: 100%;
+  animation: scroll-ticker 38s linear infinite;
+}
+.ticker__item{
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+.ticker__item::after{
+  content: "|";
+  margin-left: 2.5rem;
+  color: var(--line);
+}
+@keyframes scroll-ticker{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-100%); }
+}
+@media (prefers-reduced-motion: reduce){
+  .ticker__track{ animation: none; padding-left: 1.5rem; }
+  .ticker{ overflow-x: auto; }
+}
+
+/* ---------- board layout ---------- */
+.board{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1rem;
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+@media (max-width: 860px){
+  .board{ grid-template-columns: 1fr; gap: 2.5rem; }
+}
+
+.column__head{ margin-bottom: 1.25rem; }
+.column__title{
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  margin: 0 0 0.35rem;
+}
+.column--signal .column__title{ color: var(--signal); }
+.column--noise .column__title{ color: var(--noise); }
+.column__sub{
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  max-width: 46ch;
+}
+
+/* ---------- news wire list ---------- */
+.wire{ border-top: 1px solid var(--line); }
+.wire-item{
+  display: block;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+}
+.wire-item:hover .wire-item__title{ color: var(--signal); }
+.wire-item__meta{
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.wire-item__source{ color: var(--signal); }
+.wire-item__title{
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0 0 0.3rem;
+}
+.wire-item__dek{
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- memes ---------- */
+.memes{
+  display: grid;
+  gap: 1.1rem;
+}
+.meme-card{
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.meme-card__img-wrap{
+  position: relative;
+  background: #0b0f13;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.meme-card__img-wrap img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.meme-card__tag{
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: var(--noise-bg);
+  border: 1px solid var(--noise);
+  color: var(--noise);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  backdrop-filter: blur(2px);
+}
+.meme-card__body{ padding: 0.7rem 0.85rem 0.85rem; }
+.meme-card__title{
+  font-size: 0.92rem;
+  margin: 0 0 0.35rem;
+  line-height: 1.35;
+}
+.meme-card__meta{
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin: 0;
+}
+.meme-card:hover .meme-card__title{ color: var(--noise); }
+
+/* ---------- shared states ---------- */
+.loading, .error-note{
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.75rem 0;
+}
+.error-note{ color: var(--signal); }
+
+/* ---------- footer status bar ---------- */
+.statusbar{
+  max-width: 1180px;
+  margin: 2rem auto 0;
+  padding: 1.25rem 1.5rem 2.5rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.statusbar__row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.statusbar__label{ color: var(--ink); }
+.statusbar__row--actions{
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.refresh-btn{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+}
+.refresh-btn:hover{ border-color: var(--signal); color: var(--signal); }
+.refresh-btn:focus-visible,
+.wire-item:focus-visible,
+.meme-card:focus-visible{
+  outline: 2px solid var(--noise);
+  outline-offset: 2px;
+}
+.statusbar__disclaimer{
+  font-family: var(--sans);
+  max-width: 68ch;
+  line-height: 1.55;
+  margin: 1rem 0 0;
+}

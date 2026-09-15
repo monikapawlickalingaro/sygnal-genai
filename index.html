@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sygnał — GenAI, bez konfabulacji</title>
+<meta name="description" content="Prawdziwe newsy i memy ze świata generatywnej AI. Zero konfabulacji — wszystko pobierane na żywo z realnych źródeł.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <h1 class="masthead__wordmark">Sygnał</h1>
+    <p class="masthead__tagline">Fakty i memy ze świata GenAI — zero konfabulacji, zero halucynacji.</p>
+  </div>
+</header>
+
+<div class="ticker" id="ticker" aria-label="Najnowsze nagłówki">
+  <div class="ticker__track" id="tickerTrack">
+    <span class="ticker__item">Ładowanie najnowszych depesz…</span>
+  </div>
+</div>
+
+<main class="board">
+
+  <section class="column column--signal" aria-labelledby="signal-heading">
+    <div class="column__head">
+      <h2 id="signal-heading" class="column__title">Fakty</h2>
+      <p class="column__sub">Nagłówki i skróty prosto ze źródeł. Bez streszczeń, bez interpretacji.</p>
+    </div>
+    <div class="wire" id="newsList">
+      <p class="loading">Pobieram depesze…</p>
+    </div>
+  </section>
+
+  <section class="column column--noise" aria-labelledby="noise-heading">
+    <div class="column__head">
+      <h2 id="noise-heading" class="column__title">Szum</h2>
+      <p class="column__sub">Memy z realnych wątków na Reddicie. Linki prowadzą do oryginału.</p>
+    </div>
+    <div class="memes" id="memeGrid">
+      <p class="loading">Pobieram memy…</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="statusbar">
+  <div class="statusbar__row">
+    <span class="statusbar__label">Źródła — fakty:</span>
+    <span id="newsSourcesStatus">TechCrunch AI · The Verge AI · VentureBeat AI · Ars Technica AI</span>
+  </div>
+  <div class="statusbar__row">
+    <span class="statusbar__label">Źródła — memy:</span>
+    <span id="memeSourcesStatus">r/ProgrammerHumor · r/singularity · r/ChatGPT</span>
+  </div>
+  <div class="statusbar__row statusbar__row--actions">
+    <span id="lastUpdated">Ostatnia aktualizacja: —</span>
+    <button id="refreshBtn" class="refresh-btn" type="button">Odśwież</button>
+  </div>
+  <p class="statusbar__disclaimer">
+    Ta strona nie generuje ani nie wymyśla treści. Każdy nagłówek i każdy mem jest pobierany na żywo,
+    w Twojej przeglądarce, bezpośrednio z podanych źródeł RSS i Reddita, i linkuje do oryginału.
+    Jeśli źródło jest niedostępne, zobaczysz o tym informację zamiast zmyślonej treści.
+  </p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
